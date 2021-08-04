@@ -7,7 +7,7 @@ def exibeTabuleiro(tabuleiro):
     print(*tabuleiro[2][0],*tabuleiro[2][1], *tabuleiro[2][2], "\n")
 
 # Função entradaValida recebe o input do usuário e verifica se está entre as opções válidas, retornando True ou False.
-def entradaValida(entrada):
+def entradaValida(entrada, listaTabuleiro):
     valido = True
     entradasValidas = ["1", "2", "3"]
     if entrada not in entradasValidas:
@@ -18,7 +18,7 @@ def entradaValida(entrada):
     return valido  
 
 # Função para determinar onde será a jogada do computador
-def jogadaComputador(rodada):
+def jogadaComputador(rodada, listaJogadas, listaTabuleiro):
     posicao = []
     if rodada == 1:
         posicao = [1,1]
@@ -28,10 +28,8 @@ def jogadaComputador(rodada):
             posicao = [2,1]
         elif posicaoBolinha == [2,1] or posicaoBolinha == [3,2]:
             posicao = [2,2]
-        elif posicaoBolinha == [2,3] or posicaoBolinha ==[3,3]:
+        elif posicaoBolinha == [2,3] or posicaoBolinha ==[3,3] or posicaoBolinha == [2,2]:
             posicao = [1,3]
-        else:
-            posicao = [1,2]
     elif rodada == 5:
         if listaJogadas[2] == [2,1] and listaTabuleiro[2][0] == ['  ']:
             posicao = [3,1]
@@ -45,14 +43,14 @@ def jogadaComputador(rodada):
             posicao = [3,1]
         elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] == ['| __']:
             posicao = [1,2]
-        elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] != ['| __']:
+        elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] != ['| __'] and listaTabuleiro [1][1] == ['| __']:
             posicao = [3,1]
+        elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] != ['| __'] and listaTabuleiro [1][1] != ['| __']:
+            posicao = [3,2]
         elif listaJogadas[2] == [1,2] and listaTabuleiro[0][2] == ['| __']:
             posicao = [1,3]
-        elif listaJogadas[2] == [1,2] and listaTabuleiro[1][1] == ['| __']:
+        elif listaJogadas[2] == [1,2] and listaTabuleiro[0][2] != ['| __']:
             posicao = [2,2]
-        elif listaJogadas[2] == [1,2] and listaTabuleiro[1][1] != ['| __']:
-            posicao = [3,1]
     elif rodada == 7:
         if listaJogadas[2] == [2,1] and listaJogadas[4] == [2,2] and listaTabuleiro[1][2]==['| __']:
             posicao = [2,3]
@@ -74,20 +72,28 @@ def jogadaComputador(rodada):
             posicao = [2,1]
         elif listaJogadas[2] == [2,2] and listaJogadas[4] == [3,1] and listaTabuleiro[0][2]==['| __']:
             posicao = [1,3]
-        elif listaJogadas[2] == [1,2] and listaJogadas[4] == [3,1] and listaTabuleiro[1][0]==['__']:
-            posicao = [2,1]
-        elif listaJogadas[2] == [1,2] and listaJogadas[4] == [3,1] and listaTabuleiro[1][0]!=['__']:
+        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[1][0]!=['__']:
             posicao = [2,3]
+        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[1][2]!=['| __']:
+            posicao = [2,1]
+        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[2][0]!=['  ']:
+            posicao = [2,3]
+        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[2][2]!=['|   ']:
+            posicao = [2,1]
     elif rodada == 9:
-        if listaTabuleiro[2][1]==['|   ']:
-            posicao = [3,2]
-        else:
+        if listaTabuleiro[2][2]==['|   ']:
             posicao = [3,3]
+        elif listaTabuleiro[2][0]==['  ']:
+            posicao = [3,1]
+        elif listaTabuleiro[1][0]==['__']:
+            posicao = [2,1]
+        elif listaTabuleiro[1][2]==['| __']:
+            posicao = [2,3]
     return posicao 
 
 #Função posicaoJogada perguntará a posição que o jogador quer colocar seu marcador. 
 # Recebe o número da jogada e se será contra o computador e retorna a posição da mesma.
-def posicaoJogada(n, modo):
+def posicaoJogada(n, modo, listaJogadas, listaTabuleiro):
     jogador = ''
     if n % 2 != 0:
         jogador = 'X'
@@ -99,7 +105,7 @@ def posicaoJogada(n, modo):
     opcao = ['linha', 'coluna']
 
     if modo == '1' and jogador == 'X':
-        jogada = jogadaComputador(n)
+        jogada = jogadaComputador(n, listaJogadas, listaTabuleiro)
     else:
         while jogada in (listaJogadas) or jogada == []:
 
@@ -109,7 +115,7 @@ def posicaoJogada(n, modo):
                 jogadaInvalida = False
                 while jogadaInvalida == False:
                     jogadaOpcao = input(f"Em que {opcao[n]} você quer colocar seu {jogador}? Digite '1', '2' ou '3'.")    
-                    jogadaInvalida = entradaValida(jogadaOpcao)
+                    jogadaInvalida = entradaValida(jogadaOpcao, listaTabuleiro)
                 jogada.append(int(jogadaOpcao))
                 n+=1
             #nesse if eu verifico se a opção de posição do jogador, apesar de válida, já não está ocupada
@@ -122,7 +128,7 @@ def posicaoJogada(n, modo):
     return jogada    
 
 #Função recebe o número da jogada e as coordenadas de posição para poder retornar a alteração do tabuleiro com a jogada.
-def tabuleiro (n, jogadaLinha, jogadaColuna):    
+def tabuleiro (n, jogadaLinha, jogadaColuna, listaTabuleiro):    
     jogador = ''
     if n % 2 != 0:
         jogador = 'X'
@@ -174,7 +180,7 @@ def diagonal(tabuleiro, jogador):
     return ganhou
 
 #Recebe o número da jogada e utiliza outras funções para analisar o resultado do jogo a partir da 5ª jogada.
-def vitoria(n):
+def vitoria(n,listaTabuleiro):
     acabou = False
     if n >=5:
         if linhasIguais(listaTabuleiro, 'X') or colunasIguais(listaTabuleiro, 'X') or diagonal(listaTabuleiro, 'X'):
@@ -217,10 +223,10 @@ def __main__():
 
     #Laço que se repete por 9 vezes (número de jogadas possíveis) e chama as funções para posicionar as jogadas e verificar o resultado do jogo.
     while n < 10:
-        posicaoTabuleiro = posicaoJogada(n, opcao)
-        tabuleiro(n,posicaoTabuleiro[0], posicaoTabuleiro[1])
+        posicaoTabuleiro = posicaoJogada(n, opcao, listaJogadas, listaTabuleiro)
+        tabuleiro(n,posicaoTabuleiro[0], posicaoTabuleiro[1], listaTabuleiro)
         exibeTabuleiro(listaTabuleiro)
-        acabou = vitoria(n)
+        acabou = vitoria(n, listaTabuleiro)
         if acabou == True:
             break
 
