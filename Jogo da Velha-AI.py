@@ -125,7 +125,7 @@ def posicaoJogada(n, modo, listaJogadas, listaTabuleiro):
                 exibeTabuleiro(listaTabuleiro)
     listaJogadas.append(jogada)
         
-    return jogada    
+    return jogada, listaJogadas
 
 #Função recebe o número da jogada e as coordenadas de posição para poder retornar a alteração do tabuleiro com a jogada.
 def tabuleiro (n, jogadaLinha, jogadaColuna, listaTabuleiro):    
@@ -144,6 +144,7 @@ def tabuleiro (n, jogadaLinha, jogadaColuna, listaTabuleiro):
         barra = ''
 
     listaTabuleiro[jogadaLinha-1][jogadaColuna-1] = [barra+jogador+fim]
+    return listaTabuleiro
 
 #Função recebe a string da posição no tabuleiro e retorna somente o marcador do jogador para ser usado nas funções que verificam o resultado do jogo.
 def remover(texto):
@@ -195,17 +196,17 @@ def vitoria(n,listaTabuleiro):
 
 # Código principal
 
-
-listaTabuleiro = [
-    [['__'],['| __'],['| __']],
-    [['__'],['| __'],['| __']],
-    [['  '],['|   '],['|   ']]
-]
-
-listaJogadas = []
-exibeTabuleiro(listaTabuleiro)
-
 def __main__():
+
+    listaTabuleiro = [
+        [['__'],['| __'],['| __']],
+        [['__'],['| __'],['| __']],
+        [['  '],['|   '],['|   ']]
+    ]
+
+    listaJogadas = []
+    exibeTabuleiro(listaTabuleiro)
+
     n=1
     #Menu para jogador decidir se quer jogar contra computador ou outro jogador
     opcao = 0
@@ -223,7 +224,7 @@ def __main__():
 
     #Laço que se repete por 9 vezes (número de jogadas possíveis) e chama as funções para posicionar as jogadas e verificar o resultado do jogo.
     while n < 10:
-        posicaoTabuleiro = posicaoJogada(n, opcao, listaJogadas, listaTabuleiro)
+        posicaoTabuleiro, listaJogadas= posicaoJogada(n, opcao, listaJogadas, listaTabuleiro)
         tabuleiro(n,posicaoTabuleiro[0], posicaoTabuleiro[1], listaTabuleiro)
         exibeTabuleiro(listaTabuleiro)
         acabou = vitoria(n, listaTabuleiro)
@@ -234,5 +235,3 @@ def __main__():
 
 if __name__ == "__main__":
     __main__()
-
-
