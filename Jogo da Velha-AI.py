@@ -6,6 +6,104 @@ def exibeTabuleiro(tabuleiro):
     print(*tabuleiro[1][0],*tabuleiro[1][1], *tabuleiro[1][2])
     print(*tabuleiro[2][0],*tabuleiro[2][1], *tabuleiro[2][2], "\n")
 
+#Função recebe a string da posição no tabuleiro e retorna somente o marcador do jogador para ser usado nas funções que verificam o resultado do jogo.
+def remover(texto):
+    charRemover = "[ |_]"
+    elementNovo = re.sub(charRemover,'',texto)
+    
+    return elementNovo
+
+#Funçao usada na jogada do computador para tentar vencer
+def vencer(listaTabuleiro):
+
+    #verificando linhas
+    posicaoLinha = 0
+    colunaVazia = 0 
+    for element in listaTabuleiro: 
+        x = 0
+        vazio = False
+        posicaoLinha +=1
+        posicaoColuna = 0
+        for item in element:
+            posicaoColuna += 1
+            if remover(item[0]) == 'X':
+                x +=1
+            elif remover(item[0]) == '':
+                vazio = True
+                colunaVazia = posicaoColuna
+        if x == 2 and vazio == True:
+            return [posicaoLinha, colunaVazia]
+        
+    #verificando colunas
+    i = 0
+    while i <= 2:
+        vazio = False
+        x = 0
+        z = 0
+        while z <= 2:
+            item = listaTabuleiro[z][i][0]
+            if remover(item) == 'X':
+                x +=1
+            elif remover(item) == '':
+                vazio = True
+                colunaVazia = i
+                linhaVazia = z
+            if x == 2 and vazio == True:
+                return [(linhaVazia+1), (colunaVazia+1)]
+            z +=1
+        i+=1
+
+    #verificando diagonais
+    diagonal = [[[0,0], [1,1], [2,2]],[ [0,2], [1,1], [2,0]]]
+    
+    linhaVazia = 0
+    colunaVazia = 0 
+    for lista in diagonal:
+        x = 0
+        vazio = False
+        for element in lista:
+            linha = element[0]
+            coluna = element[1]
+            item = listaTabuleiro[linha][coluna][0]
+            if remover (item) == 'X':
+                x +=1
+            elif remover(item) == '':
+                vazio = True
+                linhaVazia = linha
+                colunaVazia = coluna
+        if x == 2 and vazio == True:
+            return [(linhaVazia+1), (colunaVazia+1)]
+    return []
+
+#Funçao usada quando se joga contra o computador que impede jogador de ganhar
+def defesa (listaTabuleiro):
+    
+    x = 0
+    vazio = False
+    posicaoColuna = 0
+    for item in listaTabuleiro[1]:
+        posicaoColuna+=1
+        if remover (item[0]) == 'O':
+            x +=1
+        elif remover(item[0]) == '':
+            vazio = True
+            colunaVazia = posicaoColuna
+    if x == 2 and vazio == True:
+            return [2, colunaVazia]
+    return []
+
+#Função para quando o jogo chega na última rodada e só resta um espaço pro computador
+def ultimoEspaco(listaTabuleiro):
+        
+    posicaoLinha = 0
+    for element in listaTabuleiro: 
+        posicaoLinha +=1
+        posicaoColuna = 0
+        for item in element:
+            posicaoColuna += 1
+            if remover(item[0]) == '':
+                return [posicaoLinha, posicaoColuna]   
+
 # Função entradaValida recebe o input do usuário e verifica se está entre as opções válidas, retornando True ou False.
 def entradaValida(entrada, listaTabuleiro):
     valido = True
@@ -30,65 +128,37 @@ def jogadaComputador(rodada, listaJogadas, listaTabuleiro):
             posicao = [2,2]
         elif posicaoBolinha == [2,3] or posicaoBolinha ==[3,3] or posicaoBolinha == [2,2]:
             posicao = [1,3]
+        elif posicaoBolinha == [3,1]:
+            posicao = [1,2]
     elif rodada == 5:
-        if listaJogadas[2] == [2,1] and listaTabuleiro[2][0] == ['  ']:
-            posicao = [3,1]
-        elif listaJogadas[2] == [2,1] and listaTabuleiro[2][0] != ['  ']:
+        posicao = vencer(listaTabuleiro)
+        if posicao != []:
+            return posicao
+        if listaJogadas[2] == [2,1] and listaTabuleiro[2][0] != ['  ']:
             posicao = [2,2]
-        elif listaJogadas[2] == [2,2] and listaTabuleiro[2][2] == ['|   ']:
-            posicao = [3,3]
         elif listaJogadas[1] == [2,1] and listaJogadas[2] == [2,2] and listaTabuleiro[2][2] != ['|   ']:
             posicao = [1,3]
         elif listaJogadas[1] == [3,2] and listaJogadas[2] == [2,2] and listaTabuleiro[2][2] != ['|   ']:
             posicao = [3,1]
-        elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] == ['| __']:
-            posicao = [1,2]
         elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] != ['| __'] and listaTabuleiro [1][1] == ['| __']:
             posicao = [3,1]
         elif listaJogadas[2] == [1,3] and listaTabuleiro[0][1] != ['| __'] and listaTabuleiro [1][1] != ['| __']:
             posicao = [3,2]
-        elif listaJogadas[2] == [1,2] and listaTabuleiro[0][2] == ['| __']:
-            posicao = [1,3]
         elif listaJogadas[2] == [1,2] and listaTabuleiro[0][2] != ['| __']:
             posicao = [2,2]
     elif rodada == 7:
-        if listaJogadas[2] == [2,1] and listaJogadas[4] == [2,2] and listaTabuleiro[1][2]==['| __']:
-            posicao = [2,3]
-        elif listaJogadas[2] == [2,1] and listaJogadas[4] == [2,2] and listaTabuleiro[2][2]==['|   ']:
-            posicao = [3,3]
-        elif listaJogadas[2] == [2,2] and listaJogadas[4] == [1,3] and listaTabuleiro[0][1]==['| __']:
-            posicao = [1,2]
-        elif listaJogadas[2] == [2,2] and listaJogadas[4] == [1,3] and listaTabuleiro[2][0]==['  ']:
-            posicao = [3,1]
-        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,1] and listaTabuleiro[1][0]==['__']:
-            posicao = [2,1]
-        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,1] and listaTabuleiro[1][1]==['| __']:
-            posicao = [2,2]
-        elif listaJogadas[2] == [1,2] and listaJogadas[4] == [2,2] and listaTabuleiro[2][1]==['|   ']:
-            posicao = [3,2]
-        elif listaJogadas[2] == [1,2] and listaJogadas[4] == [2,2] and listaTabuleiro[2][2]==['|   ']:
-            posicao = [3,3]
-        elif listaJogadas[2] == [2,2] and listaJogadas[4] == [3,1] and listaTabuleiro[1][0]==['__']:
-            posicao = [2,1]
-        elif listaJogadas[2] == [2,2] and listaJogadas[4] == [3,1] and listaTabuleiro[0][2]==['| __']:
-            posicao = [1,3]
-        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[1][0]!=['__']:
-            posicao = [2,3]
-        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[1][2]!=['| __']:
-            posicao = [2,1]
-        elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[2][0]!=['  ']:
+        posicao = vencer(listaTabuleiro)
+        if posicao != []:
+            return posicao
+        posicao = defesa(listaTabuleiro)
+        if posicao != []:
+            return posicao
+        if listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[2][0]!=['  ']:
             posicao = [2,3]
         elif listaJogadas[2] == [1,3] and listaJogadas[4] == [3,2] and listaTabuleiro[2][2]!=['|   ']:
             posicao = [2,1]
     elif rodada == 9:
-        if listaTabuleiro[2][2]==['|   ']:
-            posicao = [3,3]
-        elif listaTabuleiro[2][0]==['  ']:
-            posicao = [3,1]
-        elif listaTabuleiro[1][0]==['__']:
-            posicao = [2,1]
-        elif listaTabuleiro[1][2]==['| __']:
-            posicao = [2,3]
+        posicao = ultimoEspaco(listaTabuleiro)
     return posicao 
 
 #Função posicaoJogada perguntará a posição que o jogador quer colocar seu marcador. 
@@ -145,13 +215,6 @@ def tabuleiro (n, jogadaLinha, jogadaColuna, listaTabuleiro):
 
     listaTabuleiro[jogadaLinha-1][jogadaColuna-1] = [barra+jogador+fim]
     return listaTabuleiro
-
-#Função recebe a string da posição no tabuleiro e retorna somente o marcador do jogador para ser usado nas funções que verificam o resultado do jogo.
-def remover(texto):
-    charRemover = "[ |_]"
-    elementNovo = re.sub(charRemover,'',texto)
-    
-    return elementNovo
 
 #Função que recebe as posições do tabuleiro e o marcador para verificar vitórias nas linhas dos tabuleiros.
 def linhasIguais(tabuleiro, jogador):
